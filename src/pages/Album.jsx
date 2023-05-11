@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import Header from '../componets/Header';
 import Load from '../componets/Load';
-import getMusics from '../services/musicsAPI';
 import MusicCard from '../componets/MusicCard';
 import { getFavoriteSongs } from '../services/favoriteSongsAPI';
+import getMusics from '../services/musicsAPI';
 
 class Album extends Component {
   constructor() {

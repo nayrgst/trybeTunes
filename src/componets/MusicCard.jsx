@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Load from './Load';
-import { addSong } from '../services/favoriteSongsAPI';
+import React, { Component } from 'react';
+import { addSong, getFavoriteSongs, removeSong } from '../services/favoriteSongsAPI';
 import getMusics from '../services/musicsAPI';
+import Load from './Load';
 
 class MusicCard extends Component {
   constructor() {
@@ -13,29 +13,54 @@ class MusicCard extends Component {
     };
   }
 
-  favoriteSong = async ({ target }) => {
-    const { checked } = target;
+  async componentDidMount() {
+    const { trackId } = this.props;
+    const songs = await getFavoriteSongs();
+    const isFavorite = songs.some((song) => song.trackId === trackId);
+    this.setState({
+      favorite: isFavorite,
+    });
+  }
+
+  addFavoriteSong = async () => {
     const { trackId } = this.props;
     this.setState({
       load: true,
-      favorite: checked,
+      favorite: true,
     });
     const musics = await getMusics(trackId);
     await addSong(musics[0]);
-    // console.log(favorite);
+    this.setState({ load: false });
+  }
+
+  removeFavoriteSong = async () => {
+    const { trackId } = this.props;
     this.setState({
-      load: false,
+      load: true,
+      favorite: false,
     });
+    await removeSong(trackId);
+    this.setState({ load: false });
+  }
+
+  handleFavoriteClick = () => {
+    const { favorite } = this.state;
+    if (favorite) {
+      this.removeFavoriteSong();
+    } else {
+      this.addFavoriteSong();
+    }
   }
 
   render() {
     const { load, favorite } = this.state;
+    const { previewUrl, trackName, trackId } = this.props;
+
     if (load === true) {
       return (
         <Load />
       );
     }
-    const { previewUrl, trackName, trackId } = this.props;
     return (
       <div>
         <form>
@@ -58,7 +83,7 @@ class MusicCard extends Component {
               type="checkbox"
               name={ trackName }
               data-testid={ `checkbox-music-${trackId}` }
-              onChange={ this.favoriteSong }
+              onChange={ this.handleFavoriteClick }
               checked={ favorite }
               id="checkbox"
             />
