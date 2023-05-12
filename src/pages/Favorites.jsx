@@ -14,31 +14,41 @@ class Favorites extends Component {
     };
   }
 
-  componentDidMount() {
-    this.favoriteSongs();
+  async componentDidMount() {
+    this.setState({ load: true });
+    const songs = await getFavoriteSongs();
+    this.setState({
+      favorite: songs,
+      load: false,
+    });
   }
 
-  favoriteSongs() {
-    this.setState({ load: true }, () => {
-      getFavoriteSongs().then((favorites) => {
-        this.setState({ favorite: favorites, load: false });
-      });
+  async removeFavoriteSong(trackId) {
+    this.setState({ load: true });
+    const { favorite } = this.state;
+    const update = favorite.filter((song) => song.trackId !== trackId);
+    this.setState({
+      favorite: update,
+      load: false,
     });
   }
 
   render() {
     const { favorite, load } = this.state;
+    if (load === true) {
+      return (<Load />);
+    }
     return (
       <div data-testid="page-favorites">
         <Header />
         {load ? <Load /> : (
-          favorite.map((item) => (
+          favorite.map((music) => (
             <MusicCard
-              key={ item.trackId }
-              trackName={ item.trackName }
-              previewUrl={ item.previewUrl }
-              trackId={ item.trackId }
-              getFavorite={ () => this.favoriteSongs() }
+              key={ music.trackId }
+              trackName={ music.trackName }
+              previewUrl={ music.previewUrl }
+              trackId={ music.trackId }
+              onFavoriteClick={ () => this.removeFavoriteSong(music.trackId) }
               isFavorite
             />
           ))

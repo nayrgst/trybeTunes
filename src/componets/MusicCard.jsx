@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { addSong, getFavoriteSongs, removeSong } from '../services/favoriteSongsAPI';
@@ -5,8 +6,10 @@ import getMusics from '../services/musicsAPI';
 import Load from './Load';
 
 class MusicCard extends Component {
-  constructor() {
-    super();
+  _isMounted = false;
+
+  constructor(props) {
+    super(props);
     this.state = {
       load: false,
       favorite: false,
@@ -14,12 +17,19 @@ class MusicCard extends Component {
   }
 
   async componentDidMount() {
+    this._isMounted = true;
     const { trackId } = this.props;
     const songs = await getFavoriteSongs();
     const isFavorite = songs.some((song) => song.trackId === trackId);
-    this.setState({
-      favorite: isFavorite,
-    });
+    if (this._isMounted) {
+      this.setState({
+        favorite: isFavorite,
+      });
+    }
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   addFavoriteSong = async () => {
@@ -30,7 +40,9 @@ class MusicCard extends Component {
     });
     const musics = await getMusics(trackId);
     await addSong(musics[0]);
-    this.setState({ load: false });
+    if (this._isMounted) {
+      this.setState({ load: false });
+    }
   }
 
   removeFavoriteSong = async () => {
@@ -40,15 +52,23 @@ class MusicCard extends Component {
       favorite: false,
     });
     await removeSong(trackId);
-    this.setState({ load: false });
+    if (this._isMounted) {
+      this.setState({ load: false });
+    }
   }
 
   handleFavoriteClick = () => {
     const { favorite } = this.state;
+    const { onFavoriteClick } = this.props;
+
     if (favorite) {
       this.removeFavoriteSong();
     } else {
       this.addFavoriteSong();
+    }
+
+    if (onFavoriteClick) {
+      onFavoriteClick();
     }
   }
 
