@@ -8,7 +8,8 @@ class Login extends Component {
     super();
 
     this.state = {
-      user: '',
+      name: '',
+      email: '',
       saved: false,
       load: false,
       disabled: true,
@@ -17,21 +18,26 @@ class Login extends Component {
 
   disableButton = () => {
     const valorMinimo = 3;
-    const { user } = this.state;
-    this.setState({ disabled: (user.length < valorMinimo) });
+    const { name } = this.state;
+    this.setState({ disabled: (name.length < valorMinimo) });
   }
 
-  onInputChange = ({ target }) => {
+  onInputChangeName = ({ target }) => {
     const { value } = target;
-    this.setState({ user: value }, () => this.disableButton());
+    this.setState({ name: value }, () => this.disableButton());
+  }
+
+  onInputChangeEmail = ({ target }) => {
+    const { value } = target;
+    this.setState({ email: value }, () => this.disableButton());
   }
 
    login = async () => {
-     const { user } = this.state;
+     const { name, email } = this.state;
 
      this.setState({ load: true },
        async () => {
-         await createUser({ name: user });
+         await createUser({ name, email });
          this.setState({
            load: false,
            saved: true,
@@ -40,7 +46,7 @@ class Login extends Component {
    }
 
    render() {
-     const { user, saved, load, disabled } = this.state;
+     const { name, email, saved, load, disabled } = this.state;
      return (
        <main>
          <p>Login</p>
@@ -49,8 +55,13 @@ class Login extends Component {
              <input
                type="text"
                data-testid="login-name-input"
-               value={ user }
-               onChange={ this.onInputChange }
+               value={ name }
+               onChange={ this.onInputChangeName }
+             />
+             <input
+               type="text"
+               value={ email }
+               onChange={ this.onInputChangeEmail }
              />
              <button
                type="submit"
