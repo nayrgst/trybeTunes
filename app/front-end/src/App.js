@@ -1,19 +1,17 @@
 import React from 'react';
-import './index.css';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import Login from './pages/Login';
-import Search from './pages/Search';
+import NotFound from './components/NotFound';
+import ProfileEdit from './components/ProfileEdit';
 import Album from './pages/Album';
 import Favorites from './pages/Favorites';
+import Login from './pages/Login';
 import Profile from './pages/Profile';
-import ProfileEdit from './componets/ProfileEdit';
-import NotFound from './componets/NotFound';
+import Search from './pages/Search';
 
 class App extends React.Component {
   render() {
     return (
       <section>
-        <p>TrybeTunes</p>
         <BrowserRouter>
           <Switch>
             <Route exact path="/" component={ Login } />

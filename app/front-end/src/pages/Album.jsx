@@ -1,73 +1,56 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import Header from '../componets/Header';
-import Load from '../componets/Load';
-import MusicCard from '../componets/MusicCard';
+import React, { useContext, useEffect, useState } from 'react';
+import Header from '../components/Header';
+import Load from '../components/Load';
+import MusicCard from '../components/MusicCard';
+import { FavoriteSongsContext } from '../contexts/FavoriteSongsContext';
 import { getFavoriteSongs } from '../services/favoriteSongsAPI';
 import getMusics from '../services/musicsAPI';
 
-class Album extends Component {
-  constructor() {
-    super();
-    this.state = {
-      load: false,
-      music: [],
-      album: [],
-      favoriteSongs: [],
-    };
-  }
+function Album({ match }) {
+  const [load, setLoad] = useState(false);
+  const [music, setMusic] = useState([]);
+  const [album, setAlbum] = useState([]);
+  const { favoriteSongs } = useContext(FavoriteSongsContext);
 
-  componentDidMount() {
-    this.renderMusics();
-    this.renderFavSongs();
-  }
+  const renderFavSongs = async () => {
+    setLoad(true);
+    await getFavoriteSongs();
+    setLoad(false);
+  };
 
-  renderFavSongs = async () => {
-    this.setState({
-      load: true,
-    });
-    const songsFav = await getFavoriteSongs();
-    this.setState({
-      load: false,
-      favoriteSongs: songsFav,
-    });
-  }
+  useEffect(() => {
+    renderFavSongs();
+  }, []);
 
-  renderMusics = async () => {
-    this.setState({ load: true });
-    const { match: { params: { id } } } = this.props;
+  const renderMusics = async () => {
+    setLoad(true);
+    const { params: { id } } = match;
     const data = await getMusics(id);
-    const tracks = data.filter((item) => (
-      item.trackId
-    ));
-    this.setState({
-      load: false,
-      music: tracks,
-      album: data[0],
-    });
-  }
+    const tracks = data.filter((item) => item.trackId);
+    setLoad(false);
+    setMusic(tracks);
+    setAlbum(data[0]);
+  };
 
-  render() {
-    const { load, music, album, favoriteSongs } = this.state;
-    // console.log(favoriteSongs);
-    if (load === true) {
-      return (
-        <Load />
-      );
-    }
-    return (
-      <div data-testid="page-album">
-        <Header />
-        <section>
-          <img src={ album.artworkUrl100 } alt={ album.artistName } />
-          <p data-testid="artist-name">{ album.artistName }</p>
-          <p data-testid="album-name">{ album.collectionName }</p>
-        </section>
+  useEffect(() => {
+    renderMusics();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-        <div>
-          {
+  return (
+    <main>
+      <Header />
+      {load ? <Load /> : (
+        <div data-testid="page-album">
+          <section>
+            <img src={ album.artworkUrl100 } alt={ album.artistName } />
+            <p data-testid="artist-name">{album.artistName}</p>
+            <p data-testid="album-name">{album.collectionName}</p>
+          </section>
 
-            music.map((item) => (
+          <div>
+            {music.map((item) => (
               <MusicCard
                 key={ item.trackId }
                 trackName={ item.trackName }
@@ -75,18 +58,20 @@ class Album extends Component {
                 trackId={ item.trackId }
                 songs={ favoriteSongs }
               />
-            ))
-
-          }
+            ))}
+          </div>
         </div>
-
-      </div>
-    );
-  }
+      )}
+    </main>
+  );
 }
 
 Album.propTypes = {
-  match: PropTypes.objectOf(PropTypes.any).isRequired,
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      id: PropTypes.string.isRequired,
+    }).isRequired,
+  }).isRequired,
 };
 
 export default Album;

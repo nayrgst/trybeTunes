@@ -1,61 +1,55 @@
-import React, { Component } from 'react';
-import Header from '../componets/Header';
-import Load from '../componets/Load';
-import MusicCard from '../componets/MusicCard';
+import React, { useEffect, useState } from 'react';
+import Header from '../components/Header';
+import Load from '../components/Load';
+import MusicCard from '../components/MusicCard';
 import { getFavoriteSongs } from '../services/favoriteSongsAPI';
 
-class Favorites extends Component {
-  constructor() {
-    super();
+const Favorites = () => {
+  const [favorite, setFavorite] = useState([]);
+  const [load, setLoad] = useState(false);
 
-    this.state = {
-      favorite: [],
-      load: false,
+  useEffect(() => {
+    const fetchFavoriteSongs = async () => {
+      setLoad(true);
+      try {
+        const songs = await getFavoriteSongs();
+        setFavorite(songs);
+      } catch (error) {
+        console.error('Erro ao obter músicas favoritas:', error);
+      } finally {
+        setLoad(false);
+      }
     };
-  }
 
-  async componentDidMount() {
-    this.setState({ load: true });
-    const songs = await getFavoriteSongs();
-    this.setState({
-      favorite: songs,
-      load: false,
-    });
-  }
+    fetchFavoriteSongs();
+  }, []);
 
-  async removeFavoriteSong(trackId) {
-    this.setState({ load: true });
-    const { favorite } = this.state;
-    const update = favorite.filter((song) => song.trackId !== trackId);
-    this.setState({
-      favorite: update,
-      load: false,
-    });
-  }
+  const removeFavoriteSong = (trackId) => {
+    setLoad(true);
+    const updatedFavorite = favorite.filter((song) => song.trackId !== trackId);
+    setFavorite(updatedFavorite);
+    setLoad(false);
+  };
 
-  render() {
-    const { favorite, load } = this.state;
-    if (load === true) {
-      return (<Load />);
-    }
-    return (
-      <div data-testid="page-favorites">
-        <Header />
-        {load ? <Load /> : (
-          favorite.map((music) => (
-            <MusicCard
-              key={ music.trackId }
-              trackName={ music.trackName }
-              previewUrl={ music.previewUrl }
-              trackId={ music.trackId }
-              onFavoriteClick={ () => this.removeFavoriteSong(music.trackId) }
-              isFavorite
-            />
-          ))
-        )}
-      </div>
-    );
-  }
-}
+  return (
+    <div data-testid="page-favorites">
+      <Header />
+      {load ? (
+        <Load />
+      ) : (
+        favorite.map((music) => (
+          <MusicCard
+            key={ music.trackId }
+            trackName={ music.trackName }
+            previewUrl={ music.previewUrl }
+            trackId={ music.trackId }
+            onFavoriteClick={ () => removeFavoriteSong(music.trackId) }
+            isFavorite
+          />
+        ))
+      )}
+    </div>
+  );
+};
 
 export default Favorites;
