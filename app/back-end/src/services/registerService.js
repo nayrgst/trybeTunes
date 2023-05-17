@@ -1,8 +1,10 @@
 const joi = require('joi');
-const { runSchema } = require('../utils/schema');
+const md5 = require('md5');
+const Models = require('../database/models');
 const ErrorHttp = require('../utils/utils');
+const { runSchema } = require('../utils/schema');
 
-const loginService = {
+const registerService = {
   validationBody: runSchema(
     joi.object({
       name: joi.string().required().messages({
@@ -14,19 +16,24 @@ const loginService = {
         'string.email': 'O campo email deve ser um email válido',
         'any.required': 'O campo email é obrigatório',
       }),
-      password: joi.string().required().messages({
+      password: joi.string().min(6).required().messages({
         'string.empty': 'O campo senha é obrigatório',
         'any.required': 'O campo senha é obrigatório',
       }),
     }),
   ),
 
-  async validationLogin(body) {
+  async createUser(body) {
     const { name, email, password } = body;
-    if (!name || !email || !password) {
-      throw new ErrorHttp('Algum campo está inválido', 400);
-    }
+    const passwdHash = md5(password);
+    const listUser = await Models.users.findOne({ where: { email }, raw: true });
+
+    if (listUser) throw new ErrorHttp('Este email já está registrado', 409);
+    const data = { name, email, password: passwdHash }; 
+    const createUser = await Models.users.create(data, { raw: true });
+    
+    return createUser;
   },
 };
 
-module.exports = loginService;
+module.exports = registerService;
