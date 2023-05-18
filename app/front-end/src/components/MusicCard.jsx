@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { addSong, getFavoriteSongs, removeSong } from '../services/favoriteSongsAPI';
-import getMusics from '../services/musicsAPI';
+import { getMusics } from '../utils/fetchs';
 import Load from './Load';
 
 const MusicCard = ({ previewUrl, trackName, trackId, onFavoriteClick }) => {

@@ -1,17 +1,19 @@
 import PropTypes from 'prop-types';
 import React, { useContext, useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import Header from '../components/Header';
 import Load from '../components/Load';
 import MusicCard from '../components/MusicCard';
-import FavoriteSongsProvider from '../contexts/FavoriteSongsContext';
+import FavoriteSongsContext from '../contexts/FavoriteSongsContext';
 import { getFavoriteSongs } from '../services/favoriteSongsAPI';
-import getMusics from '../services/musicsAPI';
+import { getMusics } from '../utils/fetchs';
 
 function Album({ match }) {
   const [load, setLoad] = useState(false);
   const [music, setMusic] = useState([]);
   const [album, setAlbum] = useState([]);
-  const { favoriteSongs } = useContext(FavoriteSongsProvider);
+  const favoriteSongs = useContext(FavoriteSongsContext);
+  const { id } = useParams();
 
   const renderFavSongs = async () => {
     setLoad(true);
@@ -25,7 +27,6 @@ function Album({ match }) {
 
   const renderMusics = async () => {
     setLoad(true);
-    const { params: { id } } = match;
     const data = await getMusics(id);
     const tracks = data.filter((item) => item.trackId);
     setLoad(false);
@@ -34,9 +35,12 @@ function Album({ match }) {
   };
 
   useEffect(() => {
-    renderMusics();
+    if (match && match.params) {
+      renderMusics();
+      renderFavSongs();
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [match]);
 
   return (
     <main>

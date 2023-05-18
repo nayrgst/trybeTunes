@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Load from '../components/Load';
-import searchAlbumsAPIs from '../services/searchAlbumsAPI';
+import { searchAlbumsAPI } from '../utils/fetchs';
 
 const Search = () => {
   const [disabled, setDisabled] = useState(true);
@@ -12,7 +12,7 @@ const Search = () => {
 
   const renderAlbums = async () => {
     setLoad(true);
-    const data = await searchAlbumsAPIs(artist);
+    const data = await searchAlbumsAPI(artist);
     setAlbums(data);
     setLoad(false);
   };

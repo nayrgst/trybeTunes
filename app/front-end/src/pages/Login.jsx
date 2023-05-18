@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Load from '../components/Load';
 import { createUser } from '../services/userAPI';
 
 const Login = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [saved, setSaved] = useState(false);
@@ -12,13 +14,11 @@ const Login = () => {
   const onInputChangeEmail = ({ target }) => {
     const { value } = target;
     setEmail(value.toLowerCase());
-    disableButton();
   };
 
   const onInputChangePasswd = ({ target }) => {
     const { value } = target;
     setPassword(value.toLowerCase());
-    disableButton();
   };
 
   const login = async () => {
@@ -67,13 +67,13 @@ const Login = () => {
             type="submit"
             data-testid="login-submit-button"
             onClick={ login }
-            disabled={ disabled }
+            disabled={ !disabled }
           >
             Entrar
           </button>
         </div>
       )}
-      {saved && <redirect to="/search" />}
+      {saved && navigate('/search')}
     </main>
   );
 };
