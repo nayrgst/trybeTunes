@@ -23,7 +23,7 @@ const loginService = {
     const { email, password } = body;
     const passwdHash = md5(password);
     
-    const user = await Models.users({
+    const user = await Models.users.findOne({
       where: { email },
       raw: true,
     });
