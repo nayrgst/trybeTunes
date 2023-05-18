@@ -1,31 +1,34 @@
 import React from 'react';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import NotFound from './components/NotFound';
 import ProfileEdit from './components/ProfileEdit';
+import Redirect from './components/Redirect';
+import FavoriteSongsContext from './contexts/FavoriteSongsContext';
 import Album from './pages/Album';
 import Favorites from './pages/Favorites';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
 import Search from './pages/Search';
 
-class App extends React.Component {
-  render() {
-    return (
-      <section>
-        <BrowserRouter>
-          <Switch>
-            <Route exact path="/" component={ Login } />
-            <Route path="/search" component={ Search } />
-            <Route exact path="/album/:id" component={ Album } />
-            <Route path="/favorites" component={ Favorites } />
-            <Route exact path="/profile" component={ Profile } />
-            <Route path="/profile/edit" component={ ProfileEdit } />
-            <Route path="*" component={ NotFound } />
-          </Switch>
-        </BrowserRouter>
-      </section>
-    );
-  }
+function App() {
+  return (
+    <section>
+      <BrowserRouter>
+        <FavoriteSongsContext>
+          <Routes>
+            <Route exact path="*" element={ <NotFound /> } />
+            <Route exact path="/album/:id" element={ <Album /> } />
+            <Route exact path="/profile/edit" element={ <ProfileEdit /> } />
+            <Route exact path="/profile" element={ <Profile /> } />
+            <Route exact path="/favorites" element={ <Favorites /> } />
+            <Route exact path="/search" element={ <Search /> } />
+            <Route exact path="/login" element={ <Login /> } />
+            <Route exact path="/" element={ <Redirect /> } />
+          </Routes>
+        </FavoriteSongsContext>
+      </BrowserRouter>
+    </section>
+  );
 }
 
 export default App;

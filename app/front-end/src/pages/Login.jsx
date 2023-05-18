@@ -1,36 +1,30 @@
-import React, { useState } from 'react';
-import { Redirect } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import Load from '../components/Load';
 import { createUser } from '../services/userAPI';
 
 const Login = () => {
-  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [saved, setSaved] = useState(false);
   const [load, setLoad] = useState(false);
   const [disabled, setDisabled] = useState(true);
 
-  const disableButton = () => {
-    const valorMinimo = 3;
-    setDisabled(name.length < valorMinimo);
-  };
-
-  const onInputChangeName = (event) => {
-    const { value } = event.target;
-    setName(value);
+  const onInputChangeEmail = ({ target }) => {
+    const { value } = target;
+    setEmail(value.toLowerCase());
     disableButton();
   };
 
-  const onInputChangeEmail = (event) => {
-    const { value } = event.target;
-    setEmail(value);
+  const onInputChangePasswd = ({ target }) => {
+    const { value } = target;
+    setPassword(value.toLowerCase());
     disableButton();
   };
 
   const login = async () => {
     setLoad(true);
     try {
-      await createUser({ name, email });
+      await createUser({ email });
       setSaved(true);
     } catch (error) {
       console.error('Erro ao criar usuário:', error);
@@ -38,6 +32,17 @@ const Login = () => {
       setLoad(false);
     }
   };
+
+  useEffect(() => {
+    const validEmail = /\S+@\S+\.com/;
+    const validPasswd = 6;
+
+    if (validEmail.test(email) && password.length >= validPasswd) {
+      setDisabled(true);
+    } else {
+      setDisabled(false);
+    }
+  }, [email, password]);
 
   return (
     <main>
@@ -48,15 +53,16 @@ const Login = () => {
         <div data-testid="page-login">
           <input
             type="text"
-            data-testid="login-name-input"
-            value={ name }
-            onChange={ onInputChangeName }
-          />
-          <input
-            type="text"
             value={ email }
             onChange={ onInputChangeEmail }
           />
+
+          <input
+            type="password"
+            value={ password }
+            onChange={ onInputChangePasswd }
+          />
+
           <button
             type="submit"
             data-testid="login-submit-button"
@@ -67,7 +73,7 @@ const Login = () => {
           </button>
         </div>
       )}
-      {saved && <Redirect to="/search" />}
+      {saved && <redirect to="/search" />}
     </main>
   );
 };

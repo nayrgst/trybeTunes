@@ -1,15 +1,12 @@
 const joi = require('joi');
+const md5 = require('md5');
 const { runSchema } = require('../utils/schema');
 const ErrorHttp = require('../utils/utils');
 const Models = require('../database/models');
 
-const userService = {
+const loginService = {
   validationBody: runSchema(
     joi.object({
-      name: joi.string().required().messages({
-        'string.empty': 'O campo nome é obrigatório',
-        'any.required': 'O campo nome é obrigatório',
-      }),
       email: joi.string().email().required().messages({
         'string.empty': 'O campo email é obrigatório',
         'string.email': 'O campo email deve ser um email válido',
@@ -23,14 +20,21 @@ const userService = {
   ),
 
   async login(body) {
-    const { email } = body;
-    const listUser = await Models.users.findOne({ where: { email }, raw: true });
-    if (!listUser) {
-    throw new ErrorHttp('usuário não existe', 404);
-  }
-  return listUser;
+    const { email, password } = body;
+    const passwdHash = md5(password);
+    
+    const user = await Models.users({
+      where: { email },
+      raw: true,
+    });
+
+    if (!user || passwdHash !== user.password) {
+      throw new ErrorHttp('Usuário não encontrado!', 404);
+    }
+
+    return user;
   },
 
 };
 
-module.exports = userService;
+module.exports = loginService;

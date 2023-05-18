@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { getUser, updateUser } from '../services/userAPI';
 import Load from './Load';
 
@@ -13,7 +13,7 @@ function ProfileEdit() {
     description: '',
     image: '',
   });
-  const history = useHistory();
+  const Navigate = useNavigate();
 
   const validate = () => {
     const {
@@ -53,7 +53,7 @@ function ProfileEdit() {
     event.preventDefault();
     setLoad(true);
     await updateUser({ name, email, description, image });
-    history.push('/profile');
+    Navigate('/profile');
     setLoad(false);
   };
 

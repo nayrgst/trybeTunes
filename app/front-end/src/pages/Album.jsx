@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import Header from '../components/Header';
 import Load from '../components/Load';
 import MusicCard from '../components/MusicCard';
-import { FavoriteSongsContext } from '../contexts/FavoriteSongsContext';
+import FavoriteSongsProvider from '../contexts/FavoriteSongsContext';
 import { getFavoriteSongs } from '../services/favoriteSongsAPI';
 import getMusics from '../services/musicsAPI';
 
@@ -11,7 +11,7 @@ function Album({ match }) {
   const [load, setLoad] = useState(false);
   const [music, setMusic] = useState([]);
   const [album, setAlbum] = useState([]);
-  const { favoriteSongs } = useContext(FavoriteSongsContext);
+  const { favoriteSongs } = useContext(FavoriteSongsProvider);
 
   const renderFavSongs = async () => {
     setLoad(true);

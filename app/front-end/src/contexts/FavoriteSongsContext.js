@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { createContext, useState } from 'react';
 
-export const FavoriteSongsContext = createContext();
+const FavoriteSongsContext = createContext();
 
-export const FavoriteSongsProvider = ({ children }) => {
+const FavoriteSongsProvider = ({ children }) => {
   const [favoriteSongs, setFavoriteSongs] = useState([]);
 
   const addToFavorites = (song) => {
@@ -33,3 +33,5 @@ export const FavoriteSongsProvider = ({ children }) => {
 FavoriteSongsProvider.propTypes = {
   children: PropTypes.node.isRequired,
 };
+
+export default FavoriteSongsProvider;
