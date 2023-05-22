@@ -8,7 +8,7 @@ import FavoriteSongsContext from '../contexts/FavoriteSongsContext';
 import { getFavoriteSongs } from '../services/favoriteSongsAPI';
 import { getMusics } from '../utils/fetchs';
 
-function Album({ match }) {
+function Album() {
   const [load, setLoad] = useState(false);
   const [music, setMusic] = useState([]);
   const [album, setAlbum] = useState([]);
@@ -28,19 +28,16 @@ function Album({ match }) {
   const renderMusics = async () => {
     setLoad(true);
     const data = await getMusics(id);
-    const tracks = data.filter((item) => item.trackId);
+    const tracks = [...data];
     setLoad(false);
     setMusic(tracks);
-    setAlbum(data[0]);
+    setAlbum(data.shift());
   };
 
   useEffect(() => {
-    if (match && match.params) {
-      renderMusics();
-      renderFavSongs();
-    }
+    renderMusics();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [match]);
+  }, []);
 
   return (
     <main>

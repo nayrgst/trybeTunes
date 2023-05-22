@@ -30,7 +30,7 @@ const MusicCard = ({ previewUrl, trackName, trackId, onFavoriteClick }) => {
     setLoad(true);
     setFavorite(true);
     const musics = await getMusics(trackId);
-    await addSong(musics[0]);
+    await addSong(musics);
     setLoad(false);
   };
 
