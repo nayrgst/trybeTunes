@@ -28,7 +28,7 @@ function Album() {
   const renderMusics = async () => {
     setLoad(true);
     const data = await getMusics(id);
-    const tracks = [...data];
+    const tracks = data;
     setLoad(false);
     setMusic(tracks);
     setAlbum(data.shift());
