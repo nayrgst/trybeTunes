@@ -23,6 +23,10 @@ const attributes = {
     type: DataTypes.STRING,
     field: 'preview_url',
   },
+  albumName: {
+    type: DataTypes.STRING,
+    field: 'album_name',
+  },
   createdAt: {
     allowNull: false,
     type: DataTypes.DATE,

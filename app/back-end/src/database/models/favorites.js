@@ -19,6 +19,10 @@ const attributes = {
     type: DataTypes.STRING,
     field: 'track_name',
   },
+  albumName: {
+    type: DataTypes.STRING,
+    field: 'album_name',
+  },
   previewUrl: {
     type: DataTypes.STRING,
     field: 'preview_url',
